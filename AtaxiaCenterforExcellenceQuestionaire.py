@@ -7,51 +7,55 @@ import os
 # Define the grouped questions
 grouped_questions = {
     'Psychiatric Symptoms': [
-        'Do you have depression some days?',
-        'Do you have significant anxiety?',
-        'Do you have emotional liability (changes in your emotion frequently and quickly)?',
-        'Do you have suicidal thoughts?'
+        'Do you ever find yourself feeling nervous, anxious, or on edge?',
+        'Do you ever find yourself not being able to stop or control worrying?',
+        'Do you have little interest or pleasure in doing things?',
+        'Do you find yourself feeling down, depressed, or hopeless?',
+        'I have frequent and quick changes in my emotions.',
+        "I have thoughts of suicide."
     ],
     'Cognition': [
-        'Do you have word finding difficulty worse than other people your age?',
-        'Do you have changes in your memory?',
-        'Do you have difficulty multitasking or slower mental processing speed?'
+        'I have difficulty findings words, more than other people my age.',
+        'I have trouble with my memory.',
+        'I am forgetful.',
+        'I have trouble multitasking or doing many things at once.'
     ],
     'Vision': [
-        'Do you have vision problems?',
-        'Do you have double vision sometimes (seeing 2 objects instead of 1)?',
-        'Do you have oscillopsia (see the world shaking)?',
-        'Do you have trouble focusing on near objects (reading)?',
-        'Do you have trouble focusing on far objects (seeing the TV)?',
-        'Do you have difficulty moving your eyes or have eye lid spasms?'
+        'I have changes in my vision.',
+        'I have double vision (seeing 2 of things or an object and its shadow).',
+        'I see the room/world shake sometimes (like the shaking of a camera on film).',
+        'I have trouble focusing on near objects (blur or a feeling your eyes do not focus)?',
+        'I have trouble focusing on far objects (blur or a feeling your eyes do not focus)?'
     ],
     'Speech/Swallow': [
-        'Do you have a quiet voice?',
-        'Do you have slurred speech?',
-        'Do you choke on food or drink?',
-        'Do you have trouble swallowing?'
+        'I have slurred speech (drunk speech).',
+        'Other people ask me to repeat myself.',
+        'I have trouble swallowing or frequently choke or cough when eating or drinking.',
+        'I have quiet speech (hypophonia).'
     ],
     'Balance': [
-        'Do you lose your balance or fall?',
-        'Do you have difficulty walking?',
-        'Do you use a walker or wheelchair?'
-    ],
-    'Synucleinopathy Signs': [
-        'Do you have a tremor?',
-        'Do you have rigidity (stiffness in your arms or legs)?',
-        'Do you have bradykinesia (slowness in moving your arms or legs)?',
-        'Do you have dystonia (abnormal postures)?'
+        'I get lightheaded when I go from lying, sitting, or bending over to standing.',
+        'I feel like the world is moving or spinning around me (vertigo).',
+        'I have trouble walking or have changed the way I walk.',
+        'When I go down a long hall, I most commonly use this for extra support: 0 - Nothing, 1 - Wall Occasionally, 2 - Cane, 3 - Walker, 4 - Wheelchair, 5 - Cannot Perform Autonomously ',
+        'I have fallen this many times over the last 3 months: 0 - None, 1 - One to Two, 2 - Three to Six, 3 - Six to Ten, 4 - Ten to Fifteen, 5 - Fifteen+'
     ],
     'Autonomics': [
-        'Do you have significant or frequent constipation?',
-        'Do you act out your dreams?',
-        'Do you get lightheaded or the feeling you will pass out if you stand up quickly from laying?',
-        'Do you have erectile dysfunction?'
+        'I get lightheaded or feel like I will pass out if I stand up quickly from laying or sitting.',
+        'I have erectile dysfunction. (0 for not applicable)'
     ],
     'Fine Motor': [
-        'Has your handwriting changed?',
-        'Are your hands clumsy (knocking over things? Trouble buttoning shirt?)'
-    ]
+        'My handwriting has changed.',
+        'My hands are clumsy sometimes.',
+        'I have difficulty with typing or texting.'
+    ],
+    'General Neurology': [
+        'I have lost my sense of smell or taste or they have changed.',
+        'I have constipation.',
+        'I act out my dreams.',
+        'I have muscle stiffness.',
+        'I have painful muscle cramps.'
+    ]    
 }
 
 def main():
@@ -72,6 +76,7 @@ def main():
 def display_questions():
     st.title("Ataxia Questionaire")
 
+
     # Display the logos
     col1, col2 = st.columns(2)
     col1.image("logos/JH.png", use_column_width=True, caption="Ataxia Center for Excellence")
@@ -79,6 +84,7 @@ def display_questions():
 
     # Collect responses
     for group, questions in grouped_questions.items():
+        #st.subheader("For each statement below, please rate it 0-5 with 0 being never and 5 being almost always true.")
         st.subheader(group)
         for q in questions:
             st.session_state.responses[q] = st.slider(q, 0, 5, 2)  # Default value set to 2 (Middle value)
@@ -198,7 +204,7 @@ def display_plots_and_recommendations():
         yaxis=dict(tickvals=list(range(6)), ticktext=[str(i) for i in range(6)]),
         legend_title="Groups",
         width=1200,  # Set the width of the graph
-        height=800,   # Set the height of the graph
+        height=1000,   # Set the height of the graph
         margin=dict(l=0, r=50, b=150, t=50)  # Adjust left, right, bottom, and top margins as needed
     )
 
