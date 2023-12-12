@@ -3,6 +3,10 @@ import numpy as np
 import plotly.graph_objects as go
 import json
 import os
+from pymongo import MongoClient
+import pdb
+
+# pdb.set_trace()  # Debugger will activate here
 
 # Define the grouped questions
 grouped_questions = {
@@ -140,8 +144,7 @@ def save_data_to_json():
     json_str = json.dumps(data, indent=4)
 
     # Define the path where the JSON file will be saved
-    save_path = os.path.join("C:", os.sep, "Users", "James", "Documents", "Insight Diagnostics", "responses", f"{st.session_state.mrn}.json")
-
+    save_path = os.getcwd() + f"/responses/{st.session_state.mrn}.json"
     # Write the JSON string to a file
     with open(save_path, 'w') as json_file:
         json_file.write(json_str)
@@ -151,6 +154,24 @@ def save_data_to_json():
 def upload_to_azure():
     # Placeholder for Azure upload
     st.write("Uploading to Azure... (placeholder)")
+
+    data = {
+            'name': st.session_state.name,
+            'birthday': st.session_state.birthday,
+            'mrn': st.session_state.mrn,
+            'responses': st.session_state.responses,
+            'recommended_group': st.session_state.recommended_group
+        }
+
+    # Connect to MongoDB running on the default host and port
+    client = MongoClient('mongodb://teledizzy:ywvAlKodUU2AtH0M7XoOxK6xz4iuIlD8QH6YOVqfQb6RvIE6RtmVJsjxWgIFQ6Ez83zcI4MnAoEdACDbdQo2IA==@teledizzy.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@teledizzy@')
+
+    # Access database named 'mydatabase'
+    db = client['teledizzy']
+    # Access collection named 'mycollection' in the database
+    collection = db['questionnaire_response']
+
+    collection.insert_one(data)
 
 # ... [your main function]        
    
