@@ -3,6 +3,13 @@ import numpy as np
 import plotly.graph_objects as go
 import json
 import os
+from pymongo import MongoClient
+import pdb
+from datetime import datetime as dt
+
+# pdb.set_trace()  # Debugger will activate here
+
+write_to_cloud = False
 
 # Define the grouped questions
 grouped_questions = {
@@ -128,20 +135,38 @@ def display_summary():
 
 def save_data_to_json():
     # Organize data into a dictionary
+
+    # Reorganize responses by their group
+    grouped_responses = {group: [] for group in grouped_questions}
+    for question, response in st.session_state.responses.items():
+        for group, questions in grouped_questions.items():
+            if question in questions:
+                question_response_object = {
+                   'question': question,
+                   'response': response
+                }
+                if group in grouped_responses:
+                    grouped_responses[group].append(question_response_object)
+                else:
+                    grouped_responses[group] = [question_response_object]
+
+    # Organize data into a dictionary with grouped responses
+    timestamp = dt.now()
     data = {
         'name': st.session_state.name,
         'birthday': st.session_state.birthday,
         'mrn': st.session_state.mrn,
-        'responses': st.session_state.responses,
-        'recommended_group': st.session_state.recommended_group
+        'grouped_responses': grouped_responses,  # Updated part
+        'recommended_group': st.session_state.recommended_group,
+        'timestamp': timestamp.strftime('%Y-%m-%dT%H:%M:%S')
     }
+
 
     # Convert the dictionary to a JSON string
     json_str = json.dumps(data, indent=4)
 
     # Define the path where the JSON file will be saved
-    save_path = os.path.join("C:", os.sep, "Users", "James", "Documents", "Insight Diagnostics", "responses", f"{st.session_state.mrn}.json")
-
+    save_path = os.getcwd() + f"/responses/{st.session_state.mrn}_{timestamp.strftime('%Y%m%d%H%M%S')}.json"
     # Write the JSON string to a file
     with open(save_path, 'w') as json_file:
         json_file.write(json_str)
@@ -151,6 +176,25 @@ def save_data_to_json():
 def upload_to_azure():
     # Placeholder for Azure upload
     st.write("Uploading to Azure... (placeholder)")
+
+    if write_to_cloud:
+        data = {
+                'name': st.session_state.name,
+                'birthday': st.session_state.birthday,
+                'mrn': st.session_state.mrn,
+                'responses': st.session_state.responses,
+                'recommended_group': st.session_state.recommended_group
+            }
+
+        # Connect to MongoDB running on the default host and port
+        client = MongoClient('mongodb://teledizzy:ywvAlKodUU2AtH0M7XoOxK6xz4iuIlD8QH6YOVqfQb6RvIE6RtmVJsjxWgIFQ6Ez83zcI4MnAoEdACDbdQo2IA==@teledizzy.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@teledizzy@')
+
+        # Access database named 'mydatabase'
+        db = client['teledizzy']
+        # Access collection named 'mycollection' in the database
+        collection = db['questionnaire_response']
+
+        collection.insert_one(data)
 
 # ... [your main function]        
    
