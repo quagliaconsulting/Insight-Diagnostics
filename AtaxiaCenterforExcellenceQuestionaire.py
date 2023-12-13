@@ -5,8 +5,11 @@ import json
 import os
 from pymongo import MongoClient
 import pdb
+from datetime import datetime as dt
 
 # pdb.set_trace()  # Debugger will activate here
+
+write_to_cloud = False
 
 # Define the grouped questions
 grouped_questions = {
@@ -137,7 +140,8 @@ def save_data_to_json():
         'birthday': st.session_state.birthday,
         'mrn': st.session_state.mrn,
         'responses': st.session_state.responses,
-        'recommended_group': st.session_state.recommended_group
+        'recommended_group': st.session_state.recommended_group,
+        'timestamp': dt.now().strftime('%Y-%m-%dT%H:%M:%S')
     }
 
     # Convert the dictionary to a JSON string
@@ -155,23 +159,24 @@ def upload_to_azure():
     # Placeholder for Azure upload
     st.write("Uploading to Azure... (placeholder)")
 
-    data = {
-            'name': st.session_state.name,
-            'birthday': st.session_state.birthday,
-            'mrn': st.session_state.mrn,
-            'responses': st.session_state.responses,
-            'recommended_group': st.session_state.recommended_group
-        }
+    if write_to_cloud:
+        data = {
+                'name': st.session_state.name,
+                'birthday': st.session_state.birthday,
+                'mrn': st.session_state.mrn,
+                'responses': st.session_state.responses,
+                'recommended_group': st.session_state.recommended_group
+            }
 
-    # Connect to MongoDB running on the default host and port
-    client = MongoClient('mongodb://teledizzy:ywvAlKodUU2AtH0M7XoOxK6xz4iuIlD8QH6YOVqfQb6RvIE6RtmVJsjxWgIFQ6Ez83zcI4MnAoEdACDbdQo2IA==@teledizzy.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@teledizzy@')
+        # Connect to MongoDB running on the default host and port
+        client = MongoClient('mongodb://teledizzy:ywvAlKodUU2AtH0M7XoOxK6xz4iuIlD8QH6YOVqfQb6RvIE6RtmVJsjxWgIFQ6Ez83zcI4MnAoEdACDbdQo2IA==@teledizzy.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@teledizzy@')
 
-    # Access database named 'mydatabase'
-    db = client['teledizzy']
-    # Access collection named 'mycollection' in the database
-    collection = db['questionnaire_response']
+        # Access database named 'mydatabase'
+        db = client['teledizzy']
+        # Access collection named 'mycollection' in the database
+        collection = db['questionnaire_response']
 
-    collection.insert_one(data)
+        collection.insert_one(data)
 
 # ... [your main function]        
    
